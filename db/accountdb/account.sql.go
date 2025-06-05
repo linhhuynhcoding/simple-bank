@@ -3,7 +3,7 @@
 //   sqlc v1.29.0
 // source: account.sql
 
-package db
+package accountdb
 
 import (
 	"context"
@@ -16,9 +16,9 @@ VALUES ($1, $2, $3) RETURNING id, owner, balance, currency, created_at
 `
 
 type CreateAccountParams struct {
-	Owner    string `json:"owner"`
-	Balance  int64  `json:"balance"`
-	Currency string `json:"currency"`
+	Owner    string
+	Balance  int64
+	Currency string
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error) {
@@ -35,8 +35,7 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 }
 
 const deleteAccount = `-- name: DeleteAccount :exec
-DELETE FROM accounts
-WHERE id = $1
+DELETE FROM accounts WHERE id = $1
 `
 
 func (q *Queries) DeleteAccount(ctx context.Context, id int64) error {
@@ -66,8 +65,8 @@ SELECT id, owner, balance, currency, created_at FROM accounts ORDER BY id LIMIT 
 `
 
 type ListAccountParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListAccount(ctx context.Context, arg ListAccountParams) ([]Account, error) {
@@ -100,14 +99,12 @@ func (q *Queries) ListAccount(ctx context.Context, arg ListAccountParams) ([]Acc
 }
 
 const updateAccount = `-- name: UpdateAccount :exec
-UPDATE accounts
-  SET balance = $2
-WHERE id = $1
+UPDATE accounts SET balance = $2 WHERE id = $1
 `
 
 type UpdateAccountParams struct {
-	ID      int64 `json:"id"`
-	Balance int64 `json:"balance"`
+	ID      int64
+	Balance int64
 }
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) error {

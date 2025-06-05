@@ -1,9 +1,8 @@
-package db
+package accountdb
 
 import (
 	"context"
 	"testing"
-
 	"github.com/linhhuynhcoding/learn-go/util"
 	"github.com/stretchr/testify/require"
 )
