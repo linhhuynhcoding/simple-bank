@@ -1,4 +1,3 @@
-
 version: "2"
 
 sql:
@@ -9,3 +8,17 @@ sql:
       go:
         package: "accountdb"
         out: "./db/accountdb/"
+  - engine: "postgresql"
+    schema: "./db/migrations/"
+    queries: "./db/transferdb/query/"
+    gen:
+      go:
+        package: "transferdb"
+        out: "./db/transferdb/"
+  - engine: "postgresql"
+    schema: "./db/migrations/"
+    queries: "./db/entrydb/query/"
+    gen:
+      go:
+        package: "entrydb"
+        out: "./db/entrydb/"
