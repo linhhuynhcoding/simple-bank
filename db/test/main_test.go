@@ -1,4 +1,4 @@
-package db
+package test
 
 import (
 	"database/sql"
@@ -7,18 +7,16 @@ import (
 	"testing"
 
 	_ "github.com/lib/pq"
+	"github.com/linhhuynhcoding/learn-go/db"
+	
 )
-
-func TestTransferTx(t *testing.T) {
-
-}
 
 const (
 	dbDriver = "postgres"
 	dbSource = "postgresql://root:secret@localhost:5432/simple_bank_go?sslmode=disable"
 )
 
-var TestQueries *Store
+var TestQueries *db.Store
 var testDB *sql.DB
 
 func TestMain(m *testing.M) {
@@ -29,7 +27,7 @@ func TestMain(m *testing.M) {
 		log.Fatal("cannot connect to db:", err)
 	}
 
-	TestQueries = NewStore(testDB)
+	TestQueries = db.NewStore(testDB)
 
 	os.Exit(m.Run())
 }
