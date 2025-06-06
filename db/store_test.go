@@ -1,4 +1,4 @@
-package accountdb
+package db
 
 import (
 	"database/sql"
@@ -9,21 +9,27 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var testQueries *Queries
+func TestTransferTx(t *testing.T) {
+
+}
 
 const (
 	dbDriver = "postgres"
 	dbSource = "postgresql://root:secret@localhost:5432/simple_bank_go?sslmode=disable"
 )
 
-func TestMain(m *testing.M) {
-	conn, err := sql.Open(dbDriver, dbSource)
+var TestQueries *Store
+var testDB *sql.DB
 
+func TestMain(m *testing.M) {
+	var err error
+
+	testDB, err = sql.Open(dbDriver, dbSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
 
-	testQueries = New(conn)
+	TestQueries = NewStore(testDB)
 
 	os.Exit(m.Run())
 }

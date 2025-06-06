@@ -3,9 +3,12 @@ package accountdb
 import (
 	"context"
 	"database/sql"
+	"log"
+	"os"
 	"testing"
 	"time"
 
+	_ "github.com/lib/pq"
 	"github.com/linhhuynhcoding/learn-go/util"
 	"github.com/stretchr/testify/require"
 )
@@ -17,7 +20,7 @@ func createRandomAccount(t *testing.T) Account {
 		Currency: util.RandomCurrency(),
 	}
 
-	account, err := testQueries.CreateAccount(context.Background(), arg)
+	account, err := TestQueries.CreateAccount(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, account)
 
@@ -38,7 +41,7 @@ func TestCreateAccount(t *testing.T) {
 func TestGetAccount(t *testing.T) {
 	account1 := createRandomAccount(t)
 
-	account2, err := testQueries.GetAccount(context.Background(), account1.ID)
+	account2, err := TestQueries.GetAccount(context.Background(), account1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, account2)
 
@@ -57,7 +60,7 @@ func TestUpdateAccount(t *testing.T) {
 		Balance: util.RandomMoney(),
 	}
 
-	newAccount, err := testQueries.UpdateAccount(context.Background(), arg)
+	newAccount, err := TestQueries.UpdateAccount(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, newAccount)
 
@@ -71,11 +74,32 @@ func TestUpdateAccount(t *testing.T) {
 func TestDeleteAccount(t *testing.T) {
 	account := createRandomAccount(t)
 
-	err := testQueries.DeleteAccount(context.Background(), account.ID)
+	err := TestQueries.DeleteAccount(context.Background(), account.ID)
 	require.NoError(t, err)
-	
-	account2, err2 := testQueries.GetAccount(context.Background(), account.ID)
+
+	account2, err2 := TestQueries.GetAccount(context.Background(), account.ID)
 	require.Error(t, err2)
 	require.EqualError(t, err2, sql.ErrNoRows.Error())
 	require.Empty(t, account2)
+}
+
+const (
+	dbDriver = "postgres"
+	dbSource = "postgresql://root:secret@localhost:5432/simple_bank_go?sslmode=disable"
+)
+
+var TestQueries *Queries
+var testDB *sql.DB
+
+func TestMain(m *testing.M) {
+	var err error
+
+	testDB, err = sql.Open(dbDriver, dbSource)
+	if err != nil {
+		log.Fatal("cannot connect to db:", err)
+	}
+
+	TestQueries = New(testDB)
+
+	os.Exit(m.Run())
 }
