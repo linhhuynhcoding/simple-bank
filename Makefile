@@ -1,6 +1,9 @@
 postgres:
 	docker run --name linh-postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_USER=root -p 5432:5432 -d postgres
 
+postgres-start:
+	docker start linh-postgres
+
 createdb:
 	docker exec -it linh-postgres createdb --username=root --owner=root simple_bank_go
 
@@ -17,7 +20,7 @@ sqlc:
 	sqlc generate
 
 test:	
-	go test -v -cover ./...
+	go test -v -coverpkg=./... ./...
 
 server:	
 	go run main.go

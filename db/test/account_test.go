@@ -1,26 +1,26 @@
-package accountdb
+package test
 
 import (
 	"context"
 	"database/sql"
-	"log"
-	"os"
 	"testing"
 	"time"
 
 	_ "github.com/lib/pq"
 	"github.com/linhhuynhcoding/learn-go/util"
 	"github.com/stretchr/testify/require"
+	a "github.com/linhhuynhcoding/learn-go/db/accountdb"
+
 )
 
-func createRandomAccount(t *testing.T) Account {
-	arg := CreateAccountParams{
+func CreateRandomAccount(t *testing.T) a.Account {
+	arg := a.CreateAccountParams{
 		Owner:    util.RandomOwner(),
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
 	}
 
-	account, err := TestQueries.CreateAccount(context.Background(), arg)
+	account, err := TestQueries.Account.CreateAccount(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, account)
 
@@ -35,13 +35,13 @@ func createRandomAccount(t *testing.T) Account {
 }
 
 func TestCreateAccount(t *testing.T) {
-	createRandomAccount(t)
+	CreateRandomAccount(t)
 }
 
 func TestGetAccount(t *testing.T) {
-	account1 := createRandomAccount(t)
+	account1 := CreateRandomAccount(t)
 
-	account2, err := TestQueries.GetAccount(context.Background(), account1.ID)
+	account2, err := TestQueries.Account.GetAccount(context.Background(), account1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, account2)
 
@@ -53,14 +53,14 @@ func TestGetAccount(t *testing.T) {
 }
 
 func TestUpdateAccount(t *testing.T) {
-	account := createRandomAccount(t)
+	account := CreateRandomAccount(t)
 
-	arg := UpdateAccountParams{
+	arg := a.UpdateAccountParams{
 		ID:      account.ID,
 		Balance: util.RandomMoney(),
 	}
 
-	newAccount, err := TestQueries.UpdateAccount(context.Background(), arg)
+	newAccount, err := TestQueries.Account.UpdateAccount(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, newAccount)
 
@@ -72,34 +72,13 @@ func TestUpdateAccount(t *testing.T) {
 }
 
 func TestDeleteAccount(t *testing.T) {
-	account := createRandomAccount(t)
+	account := CreateRandomAccount(t)
 
-	err := TestQueries.DeleteAccount(context.Background(), account.ID)
+	err := TestQueries.Account.DeleteAccount(context.Background(), account.ID)
 	require.NoError(t, err)
 
-	account2, err2 := TestQueries.GetAccount(context.Background(), account.ID)
+	account2, err2 := TestQueries.Account.GetAccount(context.Background(), account.ID)
 	require.Error(t, err2)
 	require.EqualError(t, err2, sql.ErrNoRows.Error())
 	require.Empty(t, account2)
-}
-
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:secret@localhost:5432/simple_bank_go?sslmode=disable"
-)
-
-var TestQueries *Queries
-var testDB *sql.DB
-
-func TestMain(m *testing.M) {
-	var err error
-
-	testDB, err = sql.Open(dbDriver, dbSource)
-	if err != nil {
-		log.Fatal("cannot connect to db:", err)
-	}
-
-	TestQueries = New(testDB)
-
-	os.Exit(m.Run())
 }
