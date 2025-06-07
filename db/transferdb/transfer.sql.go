@@ -20,9 +20,9 @@ VALUES ($1, $2, $3) RETURNING id, from_account_id, to_account_id, amount, create
 `
 
 type CreateTransferParams struct {
-	FromAccountID int64
-	ToAccountID   int64
-	Amount        int64
+	FromAccountID int64 `json:"from_account_id"`
+	ToAccountID   int64 `json:"to_account_id"`
+	Amount        int64 `json:"amount"`
 }
 
 func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfer, error) {
@@ -67,9 +67,9 @@ OFFSET
 `
 
 type GetUserReceivedParams struct {
-	ToAccountID int64
-	Limit       int32
-	Offset      int32
+	ToAccountID int64 `json:"to_account_id"`
+	Limit       int32 `json:"limit"`
+	Offset      int32 `json:"offset"`
 }
 
 func (q *Queries) GetUserReceived(ctx context.Context, arg GetUserReceivedParams) ([]Transfer, error) {
@@ -113,9 +113,9 @@ OFFSET
 `
 
 type GetUserSentParams struct {
-	FromAccountID int64
-	Limit         int32
-	Offset        int32
+	FromAccountID int64 `json:"from_account_id"`
+	Limit         int32 `json:"limit"`
+	Offset        int32 `json:"offset"`
 }
 
 func (q *Queries) GetUserSent(ctx context.Context, arg GetUserSentParams) ([]Transfer, error) {
@@ -160,8 +160,8 @@ OFFSET
 `
 
 type ListTransferHistoryParams struct {
-	Limit  int32
-	Offset int32
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) ListTransferHistory(ctx context.Context, arg ListTransferHistoryParams) ([]Transfer, error) {

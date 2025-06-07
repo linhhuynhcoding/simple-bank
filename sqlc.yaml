@@ -8,6 +8,7 @@ sql:
       go:
         package: "accountdb"
         out: "./db/accountdb/"
+        emit_json_tags: true
   - engine: "postgresql"
     schema: "./db/migrations/"
     queries: "./db/transferdb/query/"
@@ -15,6 +16,7 @@ sql:
       go:
         package: "transferdb"
         out: "./db/transferdb/"
+        emit_json_tags: true
   - engine: "postgresql"
     schema: "./db/migrations/"
     queries: "./db/entrydb/query/"
@@ -22,3 +24,4 @@ sql:
       go:
         package: "entrydb"
         out: "./db/entrydb/"
+        emit_json_tags: true
