@@ -2,23 +2,20 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	"github.com/linhhuynhcoding/learn-go/api"
 	"github.com/linhhuynhcoding/learn-go/db"
-)
-
-const (
-	dbDriver      = "postgres"
-	dbSource      = "postgresql://root:secret@localhost:5432/simple_bank_go?sslmode=disable"
-	serverAddress = "0.0.0.0:8088"
+	"github.com/linhhuynhcoding/learn-go/util"
 )
 
 func main() {
-	fmt.Println("Hello, world!")
-	// var x int = "string" // This should trigger an error: cannot use "string" (type string) as int
-	conn, err := sql.Open(dbDriver, dbSource)
+	config, err := util.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load config", err)
+	}
+
+	conn, err := sql.Open(config.DBDriver, config.DBUrl)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
@@ -26,7 +23,7 @@ func main() {
 	store := db.NewStore(conn)
 	server := api.NewServer(store)
 
-	err = server.Start(serverAddress)
+	err = server.Start(config.ServerAddress)
 	if err != nil {
 		log.Fatal("cannot start server:", err)
 	}
